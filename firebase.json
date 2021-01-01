@@ -12,6 +12,10 @@
     ]
   },
   "hosting": {
+    "redirects": [
+      "source": "/"
+      "type": 302
+    ]
     "public": "public",
     "ignore": [
       "firebase.json",
