@@ -1,8 +1,35 @@
 // listen for auth status changes
 auth.onAuthStateChanged(user => {
-    console.log(user)
-})
+    if (user) {
+        //console.log('user logged in: ', user.email)
+        db.collection('guides').onSnapshot(snapshot => {
+            //console.log(snapshot.docs)
+            setupGuides(snapshot.docs);
+            setupUI(user);
+        });
+    } else {
+        setupUI();
+        setupGuides([]);
+        //console.log('user logged out: ', user.email)
+    }
+});
 
+//create new guide
+const createForm = document.querySelector('#create-form');
+createForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    db.collection('guides').add({
+        title: createForm['title'].value,
+        content: createForm['content'].value
+    }).then(() => {
+        //close modal and reset form
+        const modal = document.querySelector('#modal-create')
+        M.Modal.getInstance(modal).close();
+        createForm.reset()
+    })
+
+})
 
 //signup
 const signupForm = document.querySelector('#signup-form');
@@ -16,7 +43,7 @@ signupForm.addEventListener('submit', (e) => {
 
     //sign up the user
     auth.createUserWithEmailAndPassword(email, password).then(cred => {
-        console.log(cred)
+        //console.log(cred)
         const modal = document.querySelector('#modal-signup')
         M.Modal.getInstance(modal).close();
         signupForm.reset()
@@ -28,10 +55,7 @@ signupForm.addEventListener('submit', (e) => {
 const logout = document.querySelector('#logout');
 logout.addEventListener('click', (e) => {
     e.preventDefault();
-    auth.signOut().then(() => {
-        console.log('user signed out')
-        //SIGNOUT SUCCESSFUL
-    });
+    auth.signOut()
 });
 
 
@@ -45,7 +69,7 @@ loginForm.addEventListener('submit', (e) => {
     const password = loginForm['login-password'].value;
 
     auth.signInWithEmailAndPassword(email, password).then((cred) => {
-        console.log(cred.user)
+        //console.log(cred.user)
         // close modal and reset form
         const modal = document.querySelector('#modal-login');
         M.Modal.getInstance(modal).close();
