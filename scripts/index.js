@@ -1,11 +1,22 @@
 const guidelist = document.querySelector('.guides');
-const loggedInLinks = document.querySelectorAll('.logged-in')
-const loggedOutLinks = document.querySelectorAll('.logged-out')
-const displayName = document.querySelector('.display-name')
+const loggedInLinks = document.querySelectorAll('.logged-in');
+const loggedOutLinks = document.querySelectorAll('.logged-out');
+const displayName = document.querySelector('.display-name');
+const accountDetails = document.querySelector('.account-details');
+
 
 const setupUI = (user) => {
     if (user) {
-        console.log(user.name)
+        // account info
+        debugger.collection('users').doc(user.uid).get().then(doc => {
+            const html = `
+            <div>Logged in as ${user.email}</div>
+            <div>${doc.data().bio}</div>
+            `;
+            accountDetails.innerHTML = html;
+        })
+        
+        console.log(user.name);
         //displays username on navbar
         displayName.style.display = 'block';
         displayName.innerHTML = `<a href="#" class="grey-text" id="displays-name" > Hello, ${user.email}</a>`;
@@ -13,6 +24,8 @@ const setupUI = (user) => {
         loggedInLinks.forEach(item => item.style.display = 'block');
         loggedOutLinks.forEach(item => item.style.display = 'none');
     } else {
+        //hide account info
+        accountDetails.innerHTML = '';
         //toggle logged out UI elements 
         displayName.style.display = 'none';
         loggedInLinks.forEach(item => item.style.display = 'none');
