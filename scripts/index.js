@@ -3,20 +3,25 @@ const loggedInLinks = document.querySelectorAll('.logged-in');
 const loggedOutLinks = document.querySelectorAll('.logged-out');
 const displayName = document.querySelector('.display-name');
 const accountDetails = document.querySelector('.account-details');
+const adminItems = document.querySelectorAll('.admin')
 
 
 const setupUI = (user) => {
     if (user) {
-        // account info
-        debugger.collection('users').doc(user.uid).get().then(doc => {
+        if(user.admin){
+            adminItems.forEach(item => item.style.display = 'block'); 
+        }
+        // account info  Note: ? in the html is a ternary operator
+        db.collection('users').doc(user.uid).get().then(doc => {
             const html = `
             <div>Logged in as ${user.email}</div>
             <div>${doc.data().bio}</div>
+            <div class="pink-text">${user.admin ? 'Admin' :''} </div>
             `;
             accountDetails.innerHTML = html;
         })
         
-        console.log(user.name);
+        //console.log(user.email);
         //displays username on navbar
         displayName.style.display = 'block';
         displayName.innerHTML = `<a href="#" class="grey-text" id="displays-name" > Hello, ${user.email}</a>`;
@@ -24,6 +29,7 @@ const setupUI = (user) => {
         loggedInLinks.forEach(item => item.style.display = 'block');
         loggedOutLinks.forEach(item => item.style.display = 'none');
     } else {
+        adminItems.forEach(item => item.style.display = 'none'); 
         //hide account info
         accountDetails.innerHTML = '';
         //toggle logged out UI elements 
